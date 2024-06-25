@@ -90,25 +90,18 @@ class PerceptronBP : public BPredUnit
      *  @param count The value of the counter.
      *  @return The prediction based on the counter value.
      */
-    inline bool getPrediction(uint8_t &count);
+    inline bool getPrediction(int sum);
 
     /** Calculates the local index based on the PC. */
     inline unsigned getLocalIndex(Addr &PC);
 
-    /** Size of the local predictor. */
-    const unsigned localPredictorSize;
-
-    /** Number of bits of the local predictor's counters. */
-    const unsigned localCtrBits;
-
-    /** Number of sets. */
-    const unsigned localPredictorSets;
-
-    /** Array of counters that make up the local predictor. */
-    std::vector<SatCounter8> localCtrs;
-
-    /** Mask to get index bits. */
+    const size_t numPerceptrons;
+    const size_t numWeights;
+    const int threshold;
     const unsigned indexMask;
+
+    std::vector<std::vector<int>> perceptrons;
+    std::vector<int> globalHistory;
 };
 
 } // namespace branch_prediction
