@@ -51,6 +51,7 @@
 
 namespace gem5
 {
+  
 
 namespace branch_prediction
 {
