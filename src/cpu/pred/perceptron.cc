@@ -86,7 +86,7 @@ PerceptronBP::update(ThreadID tid, Addr branch_addr, bool taken, void *&bp_histo
 
 inline
 bool
-PerceptronBP::getPrediction(uint8_t &count)
+PerceptronBP::getPrediction(int sum)
 {
     return sum >= 0;
 }
