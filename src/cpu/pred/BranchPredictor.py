@@ -156,15 +156,17 @@ class BranchPredictor(SimObject):
         "Indirect branch predictor, set to NULL to disable "
         "indirect predictions",
     )
+    
+n = 15
+N = 8
+t = int(math.floor(1.93 * n + 14))
 
 class PerceptronBP(BranchPredictor):
     type = "PerceptronBP"
     cxx_class = "gem5::branch_prediction::PerceptronBP"
     cxx_header = "cpu/pred/perceptron.hh"
     
-    n = 31
-    N = 16
-    t = int(math.floor(1.93 * n + 14))
+    
 
     numPerceptrons = Param.Unsigned(N, "number of perceptrons")
     historyLength = Param.Unsigned(n, "history length")
