@@ -165,7 +165,7 @@ class PerceptronBP(BranchPredictor):
     
     
 
-    numPerceptrons = Param.Unsigned(8, "number of perceptrons")
+    numPerceptrons = Param.Unsigned(16, "number of perceptrons")
     historyLength = Param.Unsigned(31, "history length")
     threshold = Param.Unsigned(512, "threshold")
 
