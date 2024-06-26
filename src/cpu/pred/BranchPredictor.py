@@ -158,7 +158,7 @@ class BranchPredictor(SimObject):
     )
     
 n = 31
-N = 8
+N = 16
 t = int(math.floor(1.93 * n + 14))
 
 class PerceptronBP(BranchPredictor):
