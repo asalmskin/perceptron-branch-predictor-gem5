@@ -1,6 +1,4 @@
-#include "cpu/pred/perceptron.hh"
-
-#include "base/intmath.hh"
+#include "cpu/pred/perceptron_bp.hh"
 #include "base/logging.hh"
 #include "base/trace.hh"
 #include "debug/Fetch.hh"
@@ -17,82 +15,83 @@ PerceptronBP::PerceptronBP(const PerceptronBPParams &params)
       historyLength(params.historyLength),
       threshold(params.threshold),
       indexMask(numPerceptrons - 1),
-      perceptrons(numPerceptrons, std::vector<int>(historyLength, 0)),
-      globalHistory(historyLength, 1)
+      perceptrons(numPerceptrons, std::vector<int>(historyLength + 1, 0)),
+      globalHistory(historyLength, 0)
 {
     if (!isPowerOf2(numPerceptrons)) {
-        fatal("Invalid number of perceptrons! Must be a power of 2.\n");
+        fatal("Number of perceptrons must be a power of 2!\n");
     }
 
-    if (!isPowerOf2(historyLength + 1)) {
-        fatal("Invalid history length! Must be a power of 2 - 1.\n");
-    }
-
-    DPRINTF(Fetch, "index mask: %#x\n", indexMask);
-    DPRINTF(Fetch, "number of perceptrons: %i\n", numPerceptrons);
-    DPRINTF(Fetch, "number of weights: %i\n", historyLength);
-    DPRINTF(Fetch, "threshold: %i\n", threshold);
+    DPRINTF(Fetch, "Number of perceptrons: %i\n", numPerceptrons);
+    DPRINTF(Fetch, "History length: %i\n", historyLength);
+    DPRINTF(Fetch, "Threshold: %i\n", threshold);
 }
 
 void
 PerceptronBP::updateHistories(ThreadID tid, Addr pc, bool uncond,
-                         bool taken, Addr target, void * &bp_history)
+                              bool taken, Addr target, void * &bp_history)
 {
-    globalHistory.pop_back();
+    // Shift the global history to the left and insert the new outcome at the end
     globalHistory.insert(globalHistory.begin(), taken ? 1 : -1);
+    globalHistory.pop_back();
 }
 
 bool
 PerceptronBP::lookup(ThreadID tid, Addr branch_addr, void * &bp_history)
 {
-    unsigned index = getLocalIndex(branch_addr);
-    int sum = 0;
+    unsigned perceptronIndex = getLocalIndex(branch_addr);
+    int sum = perceptrons[perceptronIndex][0];  // Bias weight
+
+    DPRINTF(Fetch, "Perceptron index: %u\n", perceptronIndex);
+
+    // Calculate the dot product of the perceptron weights and global history
     for (size_t i = 0; i < historyLength; ++i) {
-        sum += perceptrons[index][i] * globalHistory[i];
+        sum += perceptrons[perceptronIndex][i + 1] * globalHistory[i];
     }
 
-    DPRINTF(Fetch, "Lookup: index=%#x, sum=%d\n", index, sum);
-
+    DPRINTF(Fetch, "Sum: %d\n", sum);
     return getPrediction(sum);
 }
 
 void
-PerceptronBP::update(ThreadID tid, Addr branch_addr, bool taken, void *&bp_history,
-                bool squashed, const StaticInstPtr & inst, Addr target)
+PerceptronBP::update(ThreadID tid, Addr branch_addr, bool taken,
+                     void * &bp_history, bool squashed,
+                     const StaticInstPtr & inst, Addr target)
 {
-    assert(bp_history == NULL);
-    
     if (squashed) {
         return;
     }
 
-    unsigned index = getLocalIndex(branch_addr);
-    int sum = 0;
+    unsigned perceptronIndex = getLocalIndex(branch_addr);
+    int sum = perceptrons[perceptronIndex][0];  // Bias weight
+
+    // Calculate the dot product of the perceptron weights and global history
     for (size_t i = 0; i < historyLength; ++i) {
-        sum += perceptrons[index][i] * globalHistory[i];
+        sum += perceptrons[perceptronIndex][i + 1] * globalHistory[i];
     }
 
-    int outcome = taken ? 1 : -1;
-    if ((getPrediction(sum) != taken) || (std::abs(sum) <= threshold)) {
+    bool prediction = getPrediction(sum);
+    if (prediction != taken || std::abs(sum) <= threshold) {
+        // Update the bias weight
+        perceptrons[perceptronIndex][0] += taken ? 1 : -1;
+
+        // Update the weights
         for (size_t i = 0; i < historyLength; ++i) {
-            perceptrons[index][i] += outcome * globalHistory[i];
+            perceptrons[perceptronIndex][i + 1] += taken ? globalHistory[i] : -globalHistory[i];
         }
     }
 
-    DPRINTF(Fetch, "Update: index=%#x, outcome=%d, sum=%d\n", index, outcome, sum);
-
+    // Update the global history
     updateHistories(tid, branch_addr, false, taken, target, bp_history);
 }
 
-inline
-bool
+inline bool
 PerceptronBP::getPrediction(int sum)
 {
     return sum >= 0;
 }
 
-inline
-unsigned
+inline unsigned
 PerceptronBP::getLocalIndex(Addr &branch_addr)
 {
     return (branch_addr >> instShiftAmt) & indexMask;
