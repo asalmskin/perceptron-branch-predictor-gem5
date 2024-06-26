@@ -157,8 +157,7 @@ class BranchPredictor(SimObject):
         "indirect predictions",
     )
     
-n = 31
-N = 16
+
 class PerceptronBP(BranchPredictor):
     type = "PerceptronBP"
     cxx_class = "gem5::branch_prediction::PerceptronBP"
@@ -166,9 +165,9 @@ class PerceptronBP(BranchPredictor):
     
     
 
-    numPerceptrons = Param.Unsigned(N, "number of perceptrons")
-    historyLength = Param.Unsigned(n, "history length")
-    threshold = Param.Unsigned(int(math.floor(1.93 * n + 14)), "threshold")
+    numPerceptrons = Param.Unsigned(8, "number of perceptrons")
+    historyLength = Param.Unsigned(15, "history length")
+    threshold = Param.Unsigned(int(math.floor(1.93 * 15 + 14)), "threshold")
 
 class LocalBP(BranchPredictor):
     type = "LocalBP"
