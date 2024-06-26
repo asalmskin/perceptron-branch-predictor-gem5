@@ -15,7 +15,7 @@ struct PerceptronBPParams
 {
     PerceptronBP * create();
     size_t numPerceptrons;
-    size_t numWeights;
+    size_t historyLength;
     int threshold;
 };
 

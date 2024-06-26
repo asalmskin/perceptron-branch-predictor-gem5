@@ -97,7 +97,7 @@ class PerceptronBP : public BPredUnit
     inline unsigned getLocalIndex(Addr &PC);
 
     const size_t numPerceptrons;
-    const size_t numWeights;
+    const size_t historyLength;
     const int threshold;
     const unsigned indexMask;
 

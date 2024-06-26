@@ -41,6 +41,7 @@ from m5.objects.ClockedObject import ClockedObject
 from m5.params import *
 from m5.proxy import *
 from m5.SimObject import *
+import math
 
 
 class BranchType(Enum):
@@ -162,8 +163,8 @@ class PerceptronBP(BranchPredictor):
     cxx_header = "cpu/pred/perceptron.hh"
 
     numPerceptrons = Param.Unsigned(8, "number of perceptrons")
-    numWeights = Param.Unsigned(15, "number of weights")
-    threshold = Param.Unsigned(128, "threshold")
+    historyLength = Param.Unsigned(15, "history length")
+    threshold = Param.Unsigned(math.floor(1.93 * historyLength + 14), "threshold")
 
 class LocalBP(BranchPredictor):
     type = "LocalBP"
