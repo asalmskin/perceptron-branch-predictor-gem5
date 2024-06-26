@@ -161,10 +161,14 @@ class PerceptronBP(BranchPredictor):
     type = "PerceptronBP"
     cxx_class = "gem5::branch_prediction::PerceptronBP"
     cxx_header = "cpu/pred/perceptron.hh"
+    
+    n = 15
+    N = 8
+    t = int(math.floor(1.93 * n + 14))
 
-    numPerceptrons = Param.Unsigned(16, "number of perceptrons")
-    historyLength = Param.Unsigned(31, "history length")
-    threshold = Param.Unsigned(int(math.floor(1.93 * historyLength + 14)), "threshold")
+    numPerceptrons = Param.Unsigned(N, "number of perceptrons")
+    historyLength = Param.Unsigned(n, "history length")
+    threshold = Param.Unsigned(t, "threshold")
 
 class LocalBP(BranchPredictor):
     type = "LocalBP"
