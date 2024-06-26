@@ -157,7 +157,7 @@ class BranchPredictor(SimObject):
         "indirect predictions",
     )
     
-n = 15
+n = 31
 N = 8
 t = int(math.floor(1.93 * n + 14))
 
