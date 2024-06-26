@@ -157,7 +157,7 @@ class BranchPredictor(SimObject):
         "indirect predictions",
     )
     
-n = 15
+n = 31
 N = 8 
 class PerceptronBP(BranchPredictor):
     type = "PerceptronBP"
