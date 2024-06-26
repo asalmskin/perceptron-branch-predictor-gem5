@@ -15,7 +15,7 @@ PerceptronBP::PerceptronBP(const PerceptronBPParams &params)
     : BPredUnit(params),
       numPerceptrons(params.numPerceptrons),
       historyLength(params.historyLength),
-      threshold(params.threshold),
+    //   threshold(params.threshold),
       indexMask(numPerceptrons - 1),
       perceptrons(numPerceptrons, std::vector<int>(historyLength, 0)),
       globalHistory(historyLength, 1)
@@ -31,7 +31,7 @@ PerceptronBP::PerceptronBP(const PerceptronBPParams &params)
     DPRINTF(Fetch, "index mask: %#x\n", indexMask);
     DPRINTF(Fetch, "number of perceptrons: %i\n", numPerceptrons);
     DPRINTF(Fetch, "number of weights: %i\n", historyLength);
-    DPRINTF(Fetch, "threshold: %i\n", threshold);
+    // DPRINTF(Fetch, "threshold: %i\n", threshold);
 }
 
 void
@@ -73,7 +73,8 @@ PerceptronBP::update(ThreadID tid, Addr branch_addr, bool taken, void *&bp_histo
     }
 
     int outcome = taken ? 1 : -1;
-    if ((getPrediction(sum) != taken) || (std::abs(sum) <= threshold)) {
+    // if ((getPrediction(sum) != taken) || (std::abs(sum) <= threshold)) {
+    if ((getPrediction(sum) != taken)) {
         for (size_t i = 0; i < historyLength; ++i) {
             perceptrons[index][i] += outcome * globalHistory[i];
         }

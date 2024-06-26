@@ -165,9 +165,9 @@ class PerceptronBP(BranchPredictor):
     
     
 
-    numPerceptrons = Param.Unsigned(16, "number of perceptrons")
-    historyLength = Param.Unsigned(31, "history length")
-    threshold = Param.Unsigned(512, "threshold")
+    numPerceptrons = Param.Unsigned(8, "number of perceptrons")
+    historyLength = Param.Unsigned(15, "history length")
+    # threshold = Param.Unsigned(512, "threshold")
 
 class LocalBP(BranchPredictor):
     type = "LocalBP"
@@ -954,7 +954,7 @@ class MultiperspectivePerceptronTAGE(MultiperspectivePerceptron):
     num_filter_entries = 0
     num_local_histories = 0
     recencypos_mask = 0  # Unused
-    threshold = -1
+    # threshold = -1
     initial_ghist_length = 0
     ignore_path_size = True
     n_sign_bits = 1
