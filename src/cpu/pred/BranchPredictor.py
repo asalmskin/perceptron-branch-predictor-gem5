@@ -158,7 +158,7 @@ class BranchPredictor(SimObject):
     )
     
 n = 31
-N = 8 
+N = 16
 class PerceptronBP(BranchPredictor):
     type = "PerceptronBP"
     cxx_class = "gem5::branch_prediction::PerceptronBP"
