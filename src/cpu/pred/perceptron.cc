@@ -5,6 +5,8 @@
 #include "base/trace.hh"
 #include "debug/Fetch.hh"
 
+#include <math.h>
+
 namespace gem5
 {
 
@@ -75,11 +77,29 @@ PerceptronBP::update(ThreadID tid, Addr branch_addr, bool taken,
     bool prediction = getPrediction(sum);
     if (prediction != taken || std::abs(sum) <= threshold) {
         // Update the bias weight
-        perceptrons[perceptronIndex][0] += taken ? 1 : -1;
+        int updatedVal = perceptrons[perceptronIndex][0] + (taken ? 1 : -1);
+
+        if (updatedVal >= pow(2, floor(log2(threshold) + 1))) {
+            perceptrons[perceptronIndex][0] = pow(2, floor(log2(threshold) + 1)) - 1;
+        }
+        else if (updatedVal <= -pow(2, floor(log2(threshold) + 1))) {
+            perceptrons[perceptronIndex][0] = -pow(2, floor(log2(threshold) + 1)) + 1;
+        }
+        else
+            perceptrons[perceptronIndex][0] += taken ? 1 : -1;
 
         // Update the weights
         for (size_t i = 0; i < historyLength; ++i) {
-            perceptrons[perceptronIndex][i + 1] += taken ? globalHistory[i] : -globalHistory[i];
+            updatedVal = perceptrons[perceptronIndex][i + 1] + (taken ? globalHistory[i] : -globalHistory[i]);
+
+            if (updatedVal >= pow(2, floor(log2(threshold) + 1))) {
+                perceptrons[perceptronIndex][i + 1] = pow(2, floor(log2(threshold) + 1)) - 1;
+            }
+            else if (updatedVal <= -pow(2, floor(log2(threshold) + 1))) {
+                perceptrons[perceptronIndex][i + 1] = -pow(2, floor(log2(threshold) + 1)) + 1;
+            }
+            else
+                perceptrons[perceptronIndex][i + 1] += taken ? globalHistory[i] : -globalHistory[i];
         }
     }
 
