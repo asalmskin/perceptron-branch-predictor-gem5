@@ -98,7 +98,7 @@ class PerceptronBP : public BPredUnit
 
     const size_t numPerceptrons;
     const size_t historyLength;
-    const int threshold;
+    // const int threshold;
     const unsigned indexMask;
 
     std::vector<std::vector<int>> perceptrons;
