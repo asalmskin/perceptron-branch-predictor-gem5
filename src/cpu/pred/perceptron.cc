@@ -15,7 +15,7 @@ PerceptronBP::PerceptronBP(const PerceptronBPParams &params)
     : BPredUnit(params),
       numPerceptrons(params.numPerceptrons),
       historyLength(params.historyLength),
-    //   threshold(params.threshold),
+      threshold(params.threshold),
       indexMask(numPerceptrons - 1),
       perceptrons(numPerceptrons, std::vector<int>(historyLength + 1, 0)),
       globalHistory(historyLength, 0)
@@ -26,7 +26,7 @@ PerceptronBP::PerceptronBP(const PerceptronBPParams &params)
 
     DPRINTF(Fetch, "Number of perceptrons: %i\n", numPerceptrons);
     DPRINTF(Fetch, "History length: %i\n", historyLength);
-    // DPRINTF(Fetch, "Threshold: %i\n", threshold);
+    DPRINTF(Fetch, "Threshold: %i\n", threshold);
 }
 
 void
@@ -73,8 +73,7 @@ PerceptronBP::update(ThreadID tid, Addr branch_addr, bool taken,
     }
 
     bool prediction = getPrediction(sum);
-    // if (prediction != taken || std::abs(sum) <= threshold) {
-    if (prediction != taken) {
+    if (prediction != taken || std::abs(sum) <= threshold) {
         // Update the bias weight
         perceptrons[perceptronIndex][0] += taken ? 1 : -1;
 
