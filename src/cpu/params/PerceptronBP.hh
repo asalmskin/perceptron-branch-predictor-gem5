@@ -16,7 +16,7 @@ struct PerceptronBPParams
     PerceptronBP * create();
     size_t numPerceptrons;
     size_t historyLength;
-    // int threshold;
+    int threshold;
 };
 
 #endif // __PARAMS__PerceptronBP__

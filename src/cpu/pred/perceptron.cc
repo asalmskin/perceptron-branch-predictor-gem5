@@ -1,4 +1,6 @@
-#include "cpu/pred/perceptron_bp.hh"
+#include "cpu/pred/perceptron.hh"
+
+#include "base/intmath.hh"
 #include "base/logging.hh"
 #include "base/trace.hh"
 #include "debug/Fetch.hh"
